@@ -1,0 +1,724 @@
+/* =====================================================================
+   1. VARIABLES (colores)
+   Paleta: celeste FIUBA (#358ccf) sobre grises azulados
+   ===================================================================== */
+:root {
+  --bg: #e2edf7;
+  --panel: #f7fbff;
+  --ink: #0f2a43;
+  --mut: #53697f;
+  --line: #b5cde2;
+  --acc: #1f6fb2;         /* celeste FIUBA, un poco más oscuro para que el texto blanco se lea */
+  --on-acc: #ffffff;
+  --hl: #cfe3f5;
+  --chg: #ffe178;
+  --ok: #0c7a58;
+  --sh: #0f2a43;          /* sombra "dura" de los botones */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a1a2a;
+    --panel: #102338;
+    --ink: #e6f1fb;
+    --mut: #8fb0cc;
+    --line: #223d58;
+    --acc: #5aa9e6;       /* celeste más claro para que destaque sobre fondo oscuro */
+    --on-acc: #0a1a2a;
+    --hl: #1a3a5a;
+    --chg: #6e5600;
+    --ok: #4fd6a4;
+    --sh: #3a6f9f;
+  }
+}
+
+
+/* =====================================================================
+   2. BASE
+   ===================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  /* grilla de puntitos tipo cuaderno de ingeniería */
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 15px/1.5 "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--acc);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--acc);
+  color: var(--on-acc);
+}
+
+
+/* =====================================================================
+   3. PANTALLA DE CARGA
+   ===================================================================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  transition: opacity 0.6s, visibility 0.6s;
+}
+
+#loader.done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.ld {
+  width: min(460px, 100%);
+  padding: 28px 26px 24px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel);
+  box-shadow: 6px 6px 0 var(--sh);
+  text-align: center;
+}
+
+.ld .k {
+  margin: 0 0 14px;
+  color: var(--mut);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ld h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ld h2 {
+  margin: 4px 0 20px;
+  color: var(--acc);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ld .nm {
+  margin: 0;
+  font-weight: 600;
+}
+
+.bar {
+  height: 12px;
+  margin-top: 26px;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--panel);
+}
+
+/* relleno con rayas diagonales */
+.bar i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background-color: var(--acc);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.28) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.pct {
+  margin: 8px 0 0;
+  color: var(--mut);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.logo {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 20px;
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo {
+    filter: invert(1);
+    mix-blend-mode: screen;
+  }
+}
+
+
+/* =====================================================================
+   4. APP ESTÁTICA (layout principal)
+   ===================================================================== */
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  height: 100dvh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.autor {
+  padding: 2px 10px;
+  border: 1.5px solid transparent;
+  border-radius: 4px;
+  background: #1f6fb2;      
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.autor:hover {
+  border-color: var(--ink);
+  box-shadow: 2px 2px 0 var(--sh);
+}
+
+.autor:focus-visible {
+  outline: 3px solid var(--acc);
+  outline-offset: 3px;
+}
+
+
+/* ---------- botones principales (Consigna 1 / 2) ---------- */
+.mainbtns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mainbtns button {
+  padding: 12px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel);
+  box-shadow: 4px 4px 0 var(--sh);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mainbtns small {
+  display: block;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.mainbtns button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--sh);
+}
+
+.mainbtns button[aria-pressed="true"] {
+  background: var(--acc);
+  color: var(--on-acc);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--sh);
+}
+
+
+/* ---------- mensaje inicial y panel desplegable ---------- */
+.hint {
+  display: grid;
+  place-items: center;
+  flex: 1 1 0%;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  color: var(--mut);
+  text-align: center;
+  transition: flex-grow 0.5s ease, opacity 0.3s;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  border: 0 solid var(--ink);
+  border-radius: 8px;
+  background: var(--panel);
+  transition: flex-grow 0.5s ease;
+}
+
+#app.open .hint {
+  flex-grow: 0;
+  border-width: 0;
+  opacity: 0;
+}
+
+#app.open .panel {
+  flex-grow: 1;
+  border-width: 2px;
+  box-shadow: 5px 5px 0 var(--sh);
+}
+
+
+/* ---------- botones de incisos y área de contenido ---------- */
+.inc {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-bottom: 2px solid var(--ink);
+  background: var(--hl);
+}
+
+.inc button {
+  flex: none;
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--panel);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.inc button[aria-selected="true"] {
+  background: var(--acc);
+  color: var(--on-acc);
+  box-shadow: 2px 2px 0 var(--sh);
+}
+
+.content {
+  --pad: 14px;
+  flex: 1;
+  min-height: 0;
+  padding: var(--pad);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.content h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+
+/* =====================================================================
+   5. CONTENIDO: texto, código y tarjetas
+   ===================================================================== */
+pre {
+  margin: 8px 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--acc);
+  border-radius: 4px;
+  background: var(--bg);
+  font: 12.5px/1.45 ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+}
+
+pre.wrap {
+  overflow-x: visible;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+code {
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--hl);
+  font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+}
+
+.card {
+  padding: 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.card h3 {
+  color: var(--acc);
+  font-size: 0.9rem;
+}
+
+/* ---------- texto + imagen lado a lado ---------- */
+.explica {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  gap: 18px;
+  align-items: start;
+}
+
+.explica figure {
+  margin: 0;
+}
+
+.explica img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 4px 4px 0 var(--sh);
+}
+
+.explica figcaption {
+  margin-top: 8px;
+  color: var(--mut);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ---------- explicación + código que se colorea (Consigna 2 a) ---------- */
+.seg li,
+.enun .cl {
+  --k: 0;
+  border-left: 5px solid transparent;
+  border-radius: 3px;
+}
+
+[data-p="1"] { --k: 210; }
+[data-p="2"] { --k: 150; }
+[data-p="3"] { --k: 0; }
+[data-p="4"] { --k: 120; }
+[data-p="5"] { --k: 45; }
+
+.seg li {
+  margin-bottom: 4px;
+  padding: 2px 8px;
+}
+
+.enun {
+  padding: 10px 12px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--acc);
+  border-radius: 4px;
+  background: var(--bg);
+  font: 12.5px/1.45 ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+}
+
+.enun .cl {
+  padding: 0 6px;
+  white-space: pre;
+}
+
+.seg li.hecho,
+.seg li.ahora,
+.enun .cl.hecho,
+.enun .cl.ahora {
+  border-left-color: hsl(var(--k) 65% 50%);
+  background: hsl(var(--k) 80% 55% / 0.18);
+}
+
+.seg li.ahora,
+.enun .cl.ahora {
+  background: hsl(var(--k) 80% 55% / 0.38);
+  font-weight: 700;
+}
+
+
+/* =====================================================================
+   6. TABLAS
+   ===================================================================== */
+.tw {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 12.5px ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+}
+
+th,
+td {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  border-bottom: 2px solid var(--ink);
+  background: var(--hl);
+  font-weight: 700;
+}
+
+td.i {
+  text-align: left;
+}
+
+td.chg {
+  background: var(--chg);
+  font-weight: 700;
+}
+
+tr.cur td {
+  border-top: 2px solid var(--acc);
+  border-bottom: 2px solid var(--acc);
+}
+
+
+/* =====================================================================
+   7. SIMULACIÓN PASO A PASO
+   ===================================================================== */
+.ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ctrl button {
+  padding: 7px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--panel);
+  box-shadow: 2px 2px 0 var(--sh);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ctrl button:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--sh);
+}
+
+.ctrl .btn-next {
+  background: var(--acc);
+  color: var(--on-acc);
+}
+
+.ctrl button:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: default;
+}
+
+.ctrl .cnt {
+  margin-left: auto;
+  color: var(--mut);
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  min-height: 3.2em;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--ink);
+  border-left: 6px solid var(--acc);
+  border-radius: 4px;
+  background: var(--panel);
+}
+
+.simgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.code {
+  font: 13px ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 42px 70px 1fr;
+  gap: 8px;
+  padding: 3px 6px;
+  border-left: 4px solid transparent;
+  border-radius: 3px;
+}
+
+.line .a {
+  color: var(--mut);
+}
+
+.line.now {
+  border-left-color: var(--acc);
+  background: var(--hl);
+}
+
+.line.now .t {
+  font-weight: 700;
+}
+
+.line.mod .t {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.ans {
+  margin-top: 14px;
+  border-left: 6px solid var(--ok);
+}
+
+.ans:empty {
+  display: none;
+}
+
+.ans p,
+.ans li {
+  margin: 4px 0;
+}
+
+.sticky {
+  position: sticky;
+  top: calc(var(--pad) * -1);
+  z-index: 5;
+  margin: 0 calc(var(--pad) * -1) 12px;
+  padding: 10px var(--pad) 12px;
+  border-bottom: 2px solid var(--ink);
+  background: var(--panel);
+}
+
+.sticky .note {
+  margin-bottom: 0;
+}
+
+
+/* =====================================================================
+   8. RESPONSIVE (celular)
+   ===================================================================== */
+@media (max-width: 820px) {
+  .simgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sticky .note {
+    min-height: 4.6em;
+    font-size: 0.9rem;
+  }
+
+  .inc {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 10px;
+    overflow-x: visible;
+  }
+
+  .inc button {
+    min-width: 44px;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+  }
+
+  .inc .full {
+    display: none;
+  }
+
+  .explica {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================================
+   9. ACCESIBILIDAD: sin animaciones si el usuario lo pide
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+
+  .mainbtns button:active,
+  .ctrl button:active {
+    transform: none;
+  }
+}
+
+
+/* =====================================================================
+   10. BARRAS DE SCROLL (acompañan los colores de la página)
+   ===================================================================== */
+
+/* Estándar (Firefox y Chrome recientes) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mut) transparent;
+}
+
+/* Chrome, Edge y Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 99px;
+  background: var(--line);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mut);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

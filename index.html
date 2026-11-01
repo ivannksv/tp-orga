@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TP ARC · Arquitectura RISC</title>
+<link rel="icon" type="image/png" href="images/logo-fiuba.png">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#358ccf">
+</head>
+<body>
+
+<div id="loader">
+  <div class="ld">
+    <img class="logo" src="images/logo-fiuba.png" alt="Logo de la Facultad de Ingeniería, UBA">
+    <p class="k">TB023 · MUSSO - PAIVA</p>
+    <h1>ORGANIZACIÓN DEL COMPUTADOR</h1>
+    <h2>Arquitectura RISC – ARC 32 bits</h2>
+    <p class="nm">Karabencsov Iván - 114921</p>
+    <div class="bar"><i id="fill"></i></div>
+    <p class="pct" id="pct">0%</p>
+  </div>
+</div>
+
+<main id="app">
+  <header>
+    <h1 class="top">
+      <span>TP Arquitectura RISC · ARC 32 bits | J.T.P: Ing. Paiva</span>
+      <a class="autor" href="https://github.com/ivannksv" target="_blank" rel="noopener noreferrer" title="Ver mi GitHub">Karabencsov Iván - 114921</a>    </h1>
+    <nav class="mainbtns">
+      <button data-c="1" aria-pressed="false">Consigna 1<small>El código tiene instrucciones y datos</small></button>
+      <button data-c="2" aria-pressed="false">Consigna 2<small>Analizamos el código proporcionado</small></button>
+    </nav>
+  </header>
+
+  <p class="hint">Seleccione una consigna...</p>
+
+  <section class="panel" id="panel" aria-live="polite">
+    <nav class="inc" id="inc"></nav>
+    <div class="content" id="content"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
