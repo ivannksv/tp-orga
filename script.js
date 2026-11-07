@@ -1,4 +1,3 @@
-
 /* =====================================================================
    1. DATOS
    ===================================================================== */
@@ -6,13 +5,13 @@
 /* ---------- Actividad 1 ---------- */
 
 const A1 = {
-  cols: ["r1", "r2", "r3", "n z", "resultado"],
+  cols: ["r1", "r2", "r3", "z", "resultado"],
 
   init: {
     r1: "✕",
     r2: "✕",
     r3: "✕",
-    "n z": "✕",
+    z: "✕",
     resultado: "00000000"
   },
 
@@ -32,7 +31,7 @@ const A1 = {
 
   steps: [],
 
-    endText: `
+  endText: `
     <h3>Respuesta c): ¿qué hace el código?</h3>
     <p>
       Suma los 5 elementos de <code>array</code> y deja el total
@@ -54,9 +53,11 @@ const A1 = {
         <code>guardar</code>.
       </li>
       <li>
-        El enunciado trae <code>0xfffffe0</code> con 7 dígitos y
-        el ensamblador lo toma como <code>0x0fffffe0</code>. Por eso el
-        resultado es <code>1000000c</code>.
+        Los elementos son 25, -32 (<code>0xffffffe0</code>), 3, -5
+        (<code>0xfffffffb</code>) y 21, y se suman de atrás para adelante.
+        Los negativos están en complemento a 2.
+        El resultado final es 21 - 5 + 3 - 32 + 25 = 12
+        (<code>0x0000000c</code>).
       </li>
     </ul>
   `
@@ -70,8 +71,8 @@ const A1_VUELTAS = [
   ["00000010", "00000015", "00000015"],
   ["0000000c", "fffffffb", "00000010"],
   ["00000008", "00000003", "00000013"],
-  ["00000004", "0fffffe0", "0ffffff3"],
-  ["00000000", "00000019", "1000000c"]
+  ["00000004", "ffffffe0", "fffffff3"],
+  ["00000000", "00000019", "0000000c"]
 ];
 
 function crearPasosA1() {
@@ -116,7 +117,7 @@ function crearPasosA1() {
 
     pasos.push({
       l: 5,
-      set: { "n z": esUltima ? "0 1" : "0 0" },
+      set: { z: esUltima ? "1" : "0" },
       t: esUltima
         ? "r1 llegó a 0, así que el flag Z pasa a 1."
         : "r1 todavía no es 0, entonces Z queda en 0."
@@ -141,14 +142,16 @@ function crearPasosA1() {
 
   pasos.push({
     l: 8,
-    set: { resultado: "1000000c" },
-    t: "Se guarda r3 en resultado (0x82c). La suma da 1000000c."
+    set: { resultado: "0000000c" },
+    t: "Se guarda r3 en resultado (0x82c). La suma da 12 (0x0000000c)."
   });
 
   pasos.push({
     l: 9,
     set: {},
-    t: "El ba fin salta a sí mismo, queda en bucle infinito y ahí termina el programa."
+    fin: true,
+    t: "El ba fin salta a sí mismo, queda en bucle infinito y ahí termina el programa. " +
+       "Después de guardar el resultado no se sabe qué valores quedan, por eso todo pasa a ✕."
   });
 }
 
@@ -181,7 +184,7 @@ const A2 = {
     ["82c", "10800000", "ba fin"]
   ],
 
-    steps: [
+  steps: [
     {
       l: 0,
       set: { r1: "00000bb8" },
@@ -217,7 +220,7 @@ const A2 = {
     {
       l: 6,
       set: { r3: "fffffc18" },
-      t: "Ahora se ejecuta lo que hay en sumar: " +
+      t: "En 0x824 ya no está el nop: se ejecuta el add %r1,%r2,%r3 que se escribió ahí. " +
          "r3 = 3000 + (-4000) = -1000 (0xfffffc18)."
     },
     {
@@ -228,7 +231,9 @@ const A2 = {
     {
       l: 8,
       set: {},
-      t: "El ba fin salta a sí mismo, bucle infinito, fin del programa."
+      fin: true,
+      t: "El ba fin salta a sí mismo, bucle infinito, fin del programa. " +
+         "Después de guardar el resultado no se sabe qué valores quedan, por eso todo pasa a ✕."
     }
   ],
 
@@ -242,7 +247,7 @@ const TXT = {
   a1: `00000830
 00000800	00000014
 00000804	00000019
-00000808	0fffffe0
+00000808	ffffffe0
 0000080c	00000003
 00000810	fffffffb
 00000814	00000015
@@ -273,7 +278,7 @@ array: 2052`,
 
 00000800  0000002048  00000014  length:
 00000804  0000002052  00000019  array:
-00000808  0000002056  0fffffe0
+00000808  0000002056  ffffffe0
 0000080c  0000002060  00000003
 00000810  0000002064  fffffffb
 00000814  0000002068  00000015
@@ -303,24 +308,24 @@ array: 2052`,
 const E1 = [
   [".begin",               "No (directiva)",                       "-"],
   [".org 2048",            "No (directiva)",                       "-"],
-  ["length: 0x00000014",   "Sí (dato)",                            "0x800"],
-  ["array: 0x00000019",    "Sí (dato)",                            "0x804"],
-  ["0xfffffe0",            "Sí (dato)",                            "0x808"],
-  ["0x00000003",           "Sí (dato)",                            "0x80c"],
-  ["0xfffffffb",           "Sí (dato)",                            "0x810"],
-  ["0x00000015",           "Sí (dato)",                            "0x814"],
-  [".dwb 5",               "No (directiva, reserva 5 palabras)",   "0x818-0x82b"],
-  ["resultado: 0x00000000","Sí (dato)",                            "0x82c"],
-  ["main: 0xc2002800",     "Sí (instrucción)",                     "0x830"],
-  ["0x86080000",           "Sí (instrucción)",                     "0x834"],
-  ["sumar: 0x82007ffc",    "Sí (instrucción)",                     "0x838"],
-  ["0xc4006804",           "Sí (instrucción)",                     "0x83c"],
-  ["0x86008003",           "Sí (instrucción)",                     "0x840"],
-  ["0x80884001",           "Sí (instrucción)",                     "0x844"],
-  ["0x02800002",           "Sí (instrucción)",                     "0x848"],
-  ["0x10bffffb",           "Sí (instrucción)",                     "0x84c"],
-  ["guardar: 0xc620282c",  "Sí (instrucción)",                     "0x850"],
-  ["fin: 0x10800000",      "Sí (instrucción)",                     "0x854"],
+  ["length: 0x00000014",   "Sí (dato)",                            "2048"],
+  ["array: 0x00000019",    "Sí (dato)",                            "2052"],
+  ["0xffffffe0",           "Sí (dato)",                            "2056"],
+  ["0x00000003",           "Sí (dato)",                            "2060"],
+  ["0xfffffffb",           "Sí (dato)",                            "2064"],
+  ["0x00000015",           "Sí (dato)",                            "2068"],
+  [".dwb 5",               "No (directiva, reserva 5 palabras)",   "2072-2091"],
+  ["resultado: 0x00000000","Sí (dato)",                            "2092"],
+  ["main: 0xc2002800",     "Sí (instrucción)",                     "2096"],
+  ["0x86080000",           "Sí (instrucción)",                     "2100"],
+  ["sumar: 0x82007ffc",    "Sí (instrucción)",                     "2104"],
+  ["0xc4006804",           "Sí (instrucción)",                     "2108"],
+  ["0x86008003",           "Sí (instrucción)",                     "2112"],
+  ["0x80884001",           "Sí (instrucción)",                     "2116"],
+  ["0x02800002",           "Sí (instrucción)",                     "2120"],
+  ["0x10bffffb",           "Sí (instrucción)",                     "2124"],
+  ["guardar: 0xc620282c",  "Sí (instrucción)",                     "2128"],
+  ["fin: 0x10800000",      "Sí (instrucción)",                     "2132"],
   [".end",                 "No (directiva)",                       "-"]
 ];
 
@@ -341,6 +346,13 @@ function crearElemento(html) {
   return div;
 }
 
+// Convierte un valor en hexa (string) a decimal con signo de 32 bits
+function aDecimal(valor) {
+  if (valor === "✕") {
+    return valor;
+  }
+  return String(parseInt(valor, 16) | 0);
+}
 
 /* =====================================================================
    3. SIMULACIÓN PASO A PASO
@@ -355,7 +367,7 @@ function crearSimulacion(actividad) {
   const totalPasos = actividad.steps.length;
   let pasoActual = 0;
 
-    const el = crearElemento(`
+  const el = crearElemento(`
     <div class="sticky">
       <div class="ctrl">
         <button class="btn-prev">← Anterior</button>
@@ -401,7 +413,7 @@ function crearSimulacion(actividad) {
 
       return `
         <div class="line${claseAhora}${claseMod}">
-          <span class="a">${linea[0]}</span>
+          <span class="a">${parseInt(linea[0], 16)}</span>
           <span class="a">${palabra}</span>
           <span class="t">${texto}</span>
         </div>`;
@@ -423,7 +435,7 @@ function crearSimulacion(actividad) {
     html += "<td>Carga en memoria</td>";
     html += "<td>✕</td>";
     html += actividad.cols.map(function (c) {
-      return "<td>" + actividad.init[c] + "</td>";
+      return "<td>" + aDecimal(actividad.init[c]) + "</td>";
     }).join("");
     html += "</tr>";
 
@@ -435,12 +447,15 @@ function crearSimulacion(actividad) {
 
       html += "<tr" + claseFila + ">";
       html += "<td>" + k + "</td>";
-      html += "<td>" + linea[0] + "</td>";
+      html += "<td>" + parseInt(linea[0], 16) + "</td>";
 
       html += actividad.cols.map(function (c) {
+        if (paso.fin) {
+          return "<td>✕</td>";
+        }
         const cambio = (c in paso.set);
         if (cambio) {
-          return '<td class="chg">' + paso.set[c] + "</td>";
+          return '<td class="chg">' + aDecimal(paso.set[c]) + "</td>";
         }
         return "<td>-</td>";
       }).join("");
@@ -527,7 +542,7 @@ function tablaDirectivas() {
       </tr>`;
   }).join("");
 
-    return crearElemento(`
+  return crearElemento(`
     <h3>e) Líneas que generan código de máquina y directivas</h3>
     <p>
       Las directivas (<code>.begin</code>, <code>.org</code>, <code>.dwb</code> y
@@ -540,7 +555,7 @@ function tablaDirectivas() {
         <tr>
           <th>Línea</th>
           <th>¿Genera código?</th>
-          <th>Dirección</th>
+          <th>Dirección (decimal)</th>
         </tr>
         ${filas}
       </table>
@@ -663,21 +678,28 @@ function explicacionA2() {
 const CONSIGNAS = {
 
   1: [
-        [
+    [
       "a) Código binario",
       function () {
         return crearElemento(`
           <h3>a) Código binario generado por el simulador</h3>
           <p>
             La primera línea (<code>00000830</code>) es la dirección de inicio
-            (<code>main</code>), el resto son pares dirección de 32 bits, van
-            primero los datos y desde 0x830 las instrucciones.
+            (<code>main</code>). El resto son pares dirección - palabra de 32 bits:
+            primero van los datos y desde 0x830 las instrucciones.
+          </p>
+          <p>
+            Todos esos números están en hexadecimal. Los primeros son datos,
+            pero desde 0x830 cada número es interpretado como una instrucción
+            (por ejemplo, <code>c2002800</code> es un <code>ld</code>).
+            El hueco entre 0x818 y 0x82b no aparece porque es el espacio que
+            reserva <code>.dwb</code>.
           </p>
           <pre>${TXT.a1}</pre>
         `);
       }
     ],
-        [
+    [
       "b) Tabla de símbolos",
       function () {
         return crearElemento(`
@@ -696,7 +718,10 @@ const CONSIGNAS = {
       function () {
         return incisoConSimulacion(`
           <h3>c) Tabla de seguimiento de registros y variables</h3>
-          <p>Valores en hexadecimal, use la forma de representación de cada columna planteada en clase.</p>
+          <p>
+            Valores en decimal. ✕ = todavía sin valor. <code>resultado</code>
+            ya tiene su contenido inicial en memoria.
+          </p>
         `, A1);
       }
     ],
@@ -726,17 +751,17 @@ const CONSIGNAS = {
         return incisoConSimulacion(`
           <h3>b) Tabla de seguimiento de registros y variables</h3>
           <p>
-            Valores en hexadecimal. ✕ = todavía sin valor, <code>[0x824]</code> y
+            Valores en decimal. ✕ = todavía sin valor, <code>[0x824]</code> y
             <code>result</code> ya tienen su contenido inicial en memoria.
           </p>
         `, A2);
       }
     ],
     [
-      "c) Extra",
+      "c) Nota 0x86004002",
       function () {
         return crearElemento(`
-          <h3>Extra: ¿qué representa 0x86004002?</h3>
+          <h3>Nota: ¿qué representa 0x86004002?</h3>
           <div class="card">
             <p>
               Con el simulador se comprueba que <code>0x86004002</code> no es un
@@ -804,18 +829,18 @@ function abrirConsigna(consigna) {
     return;
   }
 
-    // Arma los botones de incisos
-    const incisos = $("#inc");
-    incisos.innerHTML = CONSIGNAS[consigna].map(function (inciso) {
-        const titulo = inciso[0];
-        const letra = titulo.slice(0, 2);   // "a)"
-        const resto = titulo.slice(2);      // " Código binario"
+  // Arma los botones de incisos
+  const incisos = $("#inc");
+  incisos.innerHTML = CONSIGNAS[consigna].map(function (inciso) {
+    const titulo = inciso[0];
+    const letra = titulo.slice(0, 2);   // "a)"
+    const resto = titulo.slice(2);      // " Código binario"
 
-        return `
-        <button aria-label="${titulo}" title="${titulo}">
-            <b>${letra}</b><span class="full">${resto}</span>
-        </button>`;
-    }).join("");
+    return `
+      <button aria-label="${titulo}" title="${titulo}">
+        <b>${letra}</b><span class="full">${resto}</span>
+      </button>`;
+  }).join("");
 
   incisos.querySelectorAll("button").forEach(function (boton, i) {
     boton.onclick = function () {
